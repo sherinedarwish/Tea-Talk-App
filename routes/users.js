@@ -8,7 +8,6 @@ const User = require("../models/User");
 
 // Login Page
 router.get("/login", forwardAuthenticated, (req, res) => {
-    // res.send("Welcome");
     res.render('login')
 });
 
@@ -17,11 +16,6 @@ router.get("/login", forwardAuthenticated, (req, res) => {
 router.get("/register", forwardAuthenticated, (req, res) => {
     res.render('register')
 });
-
-// Register Page
-router.get("/register", forwardAuthenticated, (req, res) =>
-    res.render("register")
-);
 
 // Register
 router.post("/register", (req, res) => {
@@ -89,6 +83,7 @@ router.post("/register", (req, res) => {
                         newUser
                             .save()
                             .then(user => {
+                                console.log(newUser);
                                 res.redirect('/users/login')})
                             .catch(err => console.log(err))
                 }))
@@ -122,10 +117,6 @@ router.post("/register", (req, res) => {
                             newUser
                                 .save()
                                 .then((user) => {
-                                    req.flash(
-                                        "success_msg",
-                                        "You are now registered and can log in"
-                                    );
                                     res.redirect("/users/login");
                                 })
                                 .catch((e) => console.log(e));

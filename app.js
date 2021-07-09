@@ -7,6 +7,9 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const expressLayouts = require("express-ejs-layouts");
 const mongoose = require("mongoose");
+const passport= require("passport");
+const flash = require("connect-flash");
+const session = require("express-session");
 
 
 var indexRouter = require('./routes/index');
@@ -14,12 +17,14 @@ var usersRouter = require('./routes/users');
 
 var app = express();
 
+//Passport config
+require("./config/passport")(passport);
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.use(expressLayouts);
 app.set('view engine', 'ejs');
 app.set("layout", "./layout");
-
 
 // Body Parser
 app.use(logger('dev'));
@@ -28,8 +33,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+
 
 // MongoDB
 mongoose
@@ -39,6 +43,30 @@ mongoose
     })
     .then(() => console.log("Connected DB"))
     .catch((err) => console.log(err));
+
+
+
+// Express session
+app.use(
+  session({
+      secret: "secret",
+      resave: true,
+      saveUninitialized: true,
+  })
+);
+
+
+// Passport middleware
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Connect Flash
+app.use(flash());
+
+// App Router
+app.use('/', indexRouter);
+app.use('/users', usersRouter);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
