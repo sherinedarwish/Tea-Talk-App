@@ -10,7 +10,7 @@ const mongoose = require("mongoose");
 const passport= require("passport");
 const flash = require("connect-flash");
 const session = require("express-session");
-
+const methodOverride = require("method-override");
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -44,6 +44,8 @@ mongoose
     .then(() => console.log("Connected DB"))
     .catch((err) => console.log(err));
 
+// Method Override
+app.use(methodOverride("_method"));
 
 
 // Express session
@@ -69,9 +71,9 @@ app.use('/users', usersRouter);
 
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  next(createError(404));
-});
+// app.use(function(req, res, next) {
+//   next(createError(404));
+// });
 
 // error handler
 app.use(function(err, req, res, next) {

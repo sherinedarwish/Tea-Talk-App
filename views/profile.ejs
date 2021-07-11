@@ -1,16 +1,9 @@
 
-<head style="background-color: #edd3bc; ">
+<head style="background-color: #edd3bc; background-repeat: no-repeat;">
       
     <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #edd3bc; ">
       <a class="navbar-brand" href="/">
-        <img 
-          src="images/teatalk.png" 
-          alt="teatalk" 
-          style='width:100px; 
-                height:100px; 
-                background-repeat: no-repeat;
-                '
-        ></a>
+        <img src="images/teatalk.png" alt="Fb" style='width:100px; height:100px;'></a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -47,40 +40,30 @@
 
 <body style="background-color: #edd3bc; background-repeat: no-repeat" >
 
+    <div class="row">
+        <div class="col-sm-6">
+            <img src="images/person1.png" alt="Fb" style='width:350px; height:250px; float:center;'></a>
+
+        </div>
+        <div class="col-sm-5">
+          <div class="col-md-6 m-left">
+            <div class="card card-body text-center">
+                  <br>
+                    <p style="
+                    font-family: Lucida Console, Courier New, monospace;
+                    text-align: left;
+                    font-size: X-large;
+                    text-transform: uppercase;
+                    color: #4CAF50;"> <%= user.name %>  </p>
+                    <p style="
+                    font-family: Lucida Console, Courier New, monospace;
+                    font-size: X-large;
+                    text-align: left;
+                    text-transform: uppercase;
+                    color: #4CAF50;"> <%= user.email %>  </p>
+                </div>
+            </div>
+        </div>
 
 </body>
-
-
-<div class="card text-center">
-  <div class="card-header">
-    Spill Some Tea
-  </div>
-  <div class="card-body">
-    <h5 class="card-title"></h5>
-    <form action="/dashboard" method="POST">
-      <div class="input-group">
-        <div class="input-group-prepend">
-          <span class="input-group-text">Write a post</span>
-        </div>
-        <textarea 
-          class="form-control" 
-          aria-label="With textarea"
-          type="text"
-          id="text"
-          name="text"
-          class="form-control"
-          placeholder="Spill some tea.."
-          value="<%= typeof text != 'undefined' ? text : '' %>"
-        ></textarea>
-      </div>
-      <button type="submit" class="btn btn-primary">
-        POST
-      </button>
-     
-    </form>
-    </div>
-  <div class="card-footer text-muted">
-    footer
-  </div>
-</div>
 

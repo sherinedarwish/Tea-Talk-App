@@ -1,5 +1,10 @@
+require("dotenv").config();
+
 const LocalStrategy = require('passport-local').Strategy;
 const bcrypt = require('bcryptjs');
+const FacebookStrategy = require("passport-facebook").Strategy;
+const findOrCreate = require("mongoose-findorcreate");
+
 
 
 // Load User Model
@@ -36,6 +41,29 @@ module.exports = function(passport)
                 .catch(err => console.log(err));
         })
     );
+
+
+
+
+    // Facebook 
+    passport.use(new FacebookStrategy({
+        clientID: process.env.CLIENT_ID_FB,
+        clientSecret: process.env.CLIENT_SECRET_FB,
+        callbackURL: "http://localhost:3000/users/facebook/callback",
+        profileFields: ['id','displayName','name','email','picture.type(large)']
+      },
+      function(accessToken, refreshToken, profile, cb) {
+        console.log(profile);
+        User.findOrCreate({ facebookId: profile.id }, function (err, user) {
+          return cb(err, user);
+        });
+      }
+    ));
+    
+
+
+
+
 
     passport.serializeUser((user, done) => {
         done(null, user.id);

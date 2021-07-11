@@ -19,9 +19,12 @@
     "express-ejs-layouts": "^2.5.1",
     "express-session": "^1.17.2",
     "http-errors": "~1.6.3",
+    "method-override": "^3.0.0",
     "mongoose": "^5.13.2",
+    "mongoose-findorcreate": "^3.0.0",
     "morgan": "~1.9.1",
     "passport": "^0.4.1",
+    "passport-facebook": "^3.0.0",
     "passport-local": "^1.0.0",
     "validator": "^13.6.0"
   },

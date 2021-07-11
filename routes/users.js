@@ -17,6 +17,20 @@ router.get("/register", forwardAuthenticated, (req, res) => {
     res.render('register')
 });
 
+// Facebook Login
+
+router.get('/auth/facebook',
+  passport.authenticate('facebook',{scope:'email'} ,{ failureRedirect: '/users/login' }),
+  function(req, res) {
+    // Successful authentication, redirect home.
+    res.redirect('/dashboard');
+  });
+
+router.get('/facebook/callback',
+    passport.authenticate('facebook', {
+        successRedirect : '/login',
+        failureRedirect : '/'
+    }));
 // Register
 router.post("/register", (req, res) => {
     const { name, email, password, password2 } = req.body;
@@ -88,43 +102,8 @@ router.post("/register", (req, res) => {
                             .catch(err => console.log(err))
                 }))
                 
-                
             }
         });
-    }
-
-    if (errors.length > 0) {
-        res.render("register", { errors, name, email, password, password2 });
-    } else {
-        User.findOne({ email })
-            .then((user) => {
-                if (user) {
-                    errors.push({ msg: "Email already exists" });
-                    res.render("register", {
-                        errors,
-                        name,
-                        email,
-                        password,
-                        password2,
-                    });
-                } else {
-                    const newUser = new User({ name, email, password });
-
-                    bcrypt.genSalt(10, (err, salt) => {
-                        bcrypt.hash(newUser.password, salt, (err, hash) => {
-                            if (err) throw err;
-                            newUser.password = hash;
-                            newUser
-                                .save()
-                                .then((user) => {
-                                    res.redirect("/users/login");
-                                })
-                                .catch((e) => console.log(e));
-                        });
-                    });
-                }
-            })
-            .catch((e) => console.log(e));
     }
 });
 
