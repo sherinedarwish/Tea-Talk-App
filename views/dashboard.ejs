@@ -2,7 +2,7 @@
 <head style="background-color: #edd3bc; ">
       
     <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #edd3bc; ">
-      <a class="navbar-brand" href="/">
+      <a class="navbar-brand" href="/dashboard">
         <img 
           src="images/teatalk.png" 
           alt="teatalk" 
@@ -21,7 +21,7 @@
           <a class="nav-link" href="/dashboard">Home <span class="sr-only">(current)</span></a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="/dashboard">People</a>
+          <a class="nav-link" href="/people">People</a>
         </li>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -46,41 +46,72 @@
 
 
 <body style="background-color: #edd3bc; background-repeat: no-repeat" >
+  <div class="card text-center">
+    <div class="card-header">
+      Spill Some Tea
+    </div>
+    <div class="card-body">
+      <h5 class="card-title"></h5>
+      <form action="/dashboard" method="POST">
+        <div class="input-group">
+          <div class="input-group-prepend">
+            <span class="input-group-text">Write a post</span>
+          </div>
+          <textarea 
+            class="form-control" 
+            aria-label="With textarea"
+            type="text"
+            id="text"
+            name="text"
+            class="form-control"
+            placeholder="Spill some tea.."
+            value="<%= typeof text != 'undefined' ? text : '' %>"
+          ></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">
+          POST
+        </button>
+      
+      </form>
+      </div>
 
+      <div>
+        <div class="card text-center">
+          <div class="card-header">
+            Posts
+          </div>
+          <div class="row mt-5">
+            <div class="col-md-6 m-auto">
+              
+                <% var i=1; %>
+                <% data.forEach(function(item){ %>
+
+                  <div class="input-group-prepend">
+                    <span class="input-group-text"><%=item.text %></span>
+                  </div>
+                  
+                  <input 
+                  class="form-control"  
+                  type="text" 
+                  name="telnum" 
+                  value="<%=item.text %>" 
+                  readonly="readonly" 
+                  />
+          
+                <% i++; }) %>
+              
+            </div>
+          </div>
+
+
+        </div>
+      </div>
+
+
+
+    <div class="card-footer text-muted">
+      footer
+    </div>
+  </div>
 
 </body>
-
-
-<div class="card text-center">
-  <div class="card-header">
-    Spill Some Tea
-  </div>
-  <div class="card-body">
-    <h5 class="card-title"></h5>
-    <form action="/dashboard" method="POST">
-      <div class="input-group">
-        <div class="input-group-prepend">
-          <span class="input-group-text">Write a post</span>
-        </div>
-        <textarea 
-          class="form-control" 
-          aria-label="With textarea"
-          type="text"
-          id="text"
-          name="text"
-          class="form-control"
-          placeholder="Spill some tea.."
-          value="<%= typeof text != 'undefined' ? text : '' %>"
-        ></textarea>
-      </div>
-      <button type="submit" class="btn btn-primary">
-        POST
-      </button>
-     
-    </form>
-    </div>
-  <div class="card-footer text-muted">
-    footer
-  </div>
-</div>
-

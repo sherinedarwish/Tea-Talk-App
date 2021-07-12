@@ -19,6 +19,12 @@ async function createpost(req, res) {
         .catch((err) => console.log(err));
 }
 
+async function getusers(req) {
+    const data = await User.find().catch((err) => console.error(err));
+    return data;
+}
+
+
 // GET METHOD
 async function getposts(req, res) {
     const data = await Post.find().catch((err) => console.error(err));
@@ -28,9 +34,9 @@ async function getposts(req, res) {
 // GET CONTACTS FROM ID
 async function getpostsByUser(req) {
     const userID = req.user._id;
-    const data = await Post.find({ userId: userID }).catch((err) =>
-        console.error(err)
-    );
+    console.log("userID= " , userID);
+    
+    const data = await Post.find({ userId: userID }).catch((err) => console.error(err));
     return data;
 }
 
@@ -57,4 +63,5 @@ module.exports = {
     deletepost,
     getpostsByUser,
     getpost,
+    getusers
 };

@@ -19,7 +19,7 @@ router.get("/register", forwardAuthenticated, (req, res) => {
 
 // Facebook Login
 
-router.get('/auth/facebook',
+router.get('/facebook',
   passport.authenticate('facebook',{scope:'email'} ,{ failureRedirect: '/users/login' }),
   function(req, res) {
     // Successful authentication, redirect home.

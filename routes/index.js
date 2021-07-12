@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 const createpost = require("../config/services").createpost;
 const getpost = require("../config/services").getpost;
+const getusers = require("../config/services").getusers;
+const getpostsByUser = require("../config/services").getpostsByUser;
 
 
 const { ensureAuthenticated } = require("../config/auth");
@@ -12,27 +14,35 @@ router.get("/", (req, res, next) => {
 });
 
 // Dashboard page
-router.get("/dashboard", ensureAuthenticated, (req, res) =>
-    res.render("dashboard", {
-        name: req.user.name,
-    })
-);
+router.get("/dashboard", ensureAuthenticated, async function (req, res, next) {
+    const data = await getpostsByUser(req);
+    console.log("posts= ",data);
+    res.render("dashboard", {name: req.user.name , data:data })
+});
 
 
 // POST METHOD
-router.post("/dashboard", async function (req, res, next) {
+router.post("/dashboard", ensureAuthenticated,async function (req, res, next) {
     await createpost(req, res);
     res.render("dashboard", { name: req.user.name });
 });
 
-// Dashboard page
-router.get("/profile", ensureAuthenticated, (req, res) =>
-    res.render("profile", {
-        user: req.user
-    })
-);
+// GET ALL PEOPLE PAGE
+router.get("/people", ensureAuthenticated, async function (req, res, next) {
+    const data = await getusers(req);
+    res.render("people", { data:data });
+});
 
-// DEdit profile
+
+// Profile page
+router.get("/profile", ensureAuthenticated, async function (req, res, next) {
+    const data = await getpostsByUser(req);
+    console.log("posts= ",data);
+
+    res.render("profile", { user: req.user , data:data })
+});
+
+// Edit profile
 router.get("/editprofile", ensureAuthenticated, (req, res) =>
     res.render("editprofile", {
         user: req.user

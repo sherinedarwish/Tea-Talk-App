@@ -19,7 +19,7 @@ const UserSchema = new mongoose.Schema({
         default: Date.now
     },
     facebookId:{
-        type: String
+        type: mongoose.Schema.Types.ObjectId
     },
     googleId:{
         type: String
