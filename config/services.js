@@ -34,8 +34,7 @@ async function getposts(req, res) {
 // GET CONTACTS FROM ID
 async function getpostsByUser(req) {
     const userID = req.user._id;
-    console.log("userID= " , userID);
-    
+
     const data = await Post.find({ userId: userID }).catch((err) => console.error(err));
     return data;
 }
@@ -45,7 +44,7 @@ async function deletepost(req, res) {
     Post.findByIdAndRemove(req.params.id)
         .then((data) => console.log(data))
         .catch((err) => console.error(err));
-    res.redirect("/viewall");
+    res.redirect("/profile");
 }
 
 // Update
@@ -57,11 +56,62 @@ async function getpost(req) {
     return data;
 }
 
+
+
+// Add friend
+async function addfriend(req,res) {
+    const user = req.user
+
+    const friendId = req.params.id;
+
+    const Newfriend = await User.findById(friendId).catch((err) => console.error(err));
+
+    const friends = user.friends;
+    if (friends.length === 0)
+    { 
+        console.log("Array is empty!") 
+        console.log("ADDING TO EMPTY.......");
+
+        friends.push(Newfriend._id);
+        const updated = User.findByIdAndUpdate(user._id,{friends},{useFindAndModify: false}).then(data => console.log(data)).catch(err=> console.error(err));
+        return updated;
+    }
+    else
+    {
+
+        friends.forEach((friend)=>
+        {
+            
+            if(Newfriend._id == friend)
+            {
+                console.log("Newfriend._id = ", Newfriend._id);
+                console.log("friend = ", friend);
+                console.log("Sorryyyyyyyyyyy there is one here");
+                return user;
+            }
+            
+        })
+        
+        console.log("ADDING.......");
+
+        friends.push(Newfriend._id);
+        User.findByIdAndUpdate(user._id,{friends}, {useFindAndModify: false}).then(data => console.log(data)).catch(err=> console.error(err));
+        return user;
+    
+    };
+
+}
+
+
+
+
+
 module.exports = {
     createpost,
     getpost,
     deletepost,
     getpostsByUser,
     getpost,
-    getusers
+    getusers,
+    addfriend
 };

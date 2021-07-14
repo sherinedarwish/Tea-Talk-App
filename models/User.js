@@ -23,7 +23,11 @@ const UserSchema = new mongoose.Schema({
     },
     googleId:{
         type: String
-    }
+    },
+    friends: [{ 
+        type : mongoose.Schema.Types.ObjectId, 
+        ref: 'User' 
+    }]
 });
 
 UserSchema.plugin(findOrCreate);
