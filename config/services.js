@@ -19,11 +19,11 @@ async function createpost(req, res) {
         .catch((err) => console.log(err));
 }
 
+// GET ALL USERS
 async function getusers(req) {
     const data = await User.find().catch((err) => console.error(err));
     return data;
 }
-
 
 // GET METHOD
 async function getposts(req, res) {
@@ -47,7 +47,7 @@ async function deletepost(req, res) {
     res.redirect("/profile");
 }
 
-// Update
+// Update posts
 async function getpost(req) {
     const postId = req.params.id;
     const data = await Post.findById(postId).catch((err) =>
@@ -55,8 +55,6 @@ async function getpost(req) {
     );
     return data;
 }
-
-
 
 // Add friend
 async function addfriend(req,res) {
@@ -67,42 +65,34 @@ async function addfriend(req,res) {
     const Newfriend = await User.findById(friendId).catch((err) => console.error(err));
 
     const friends = user.friends;
+    var i = 0;
     if (friends.length === 0)
     { 
-        console.log("Array is empty!") 
-        console.log("ADDING TO EMPTY.......");
-
         friends.push(Newfriend._id);
         const updated = User.findByIdAndUpdate(user._id,{friends},{useFindAndModify: false}).then(data => console.log(data)).catch(err=> console.error(err));
         return updated;
     }
     else
     {
-
         friends.forEach((friend)=>
         {
-            
-            if(Newfriend._id == friend)
-            {
-                console.log("Newfriend._id = ", Newfriend._id);
-                console.log("friend = ", friend);
-                console.log("Sorryyyyyyyyyyy there is one here");
+            if(Newfriend._id.equals(friend))
+            {   
+                i = 1;
                 return user;
             }
             
         })
-        
-        console.log("ADDING.......");
-
-        friends.push(Newfriend._id);
-        User.findByIdAndUpdate(user._id,{friends}, {useFindAndModify: false}).then(data => console.log(data)).catch(err=> console.error(err));
-        return user;
+        if (i == 0)
+        {
+            friends.push(Newfriend._id);
+            User.findByIdAndUpdate(user._id,{friends}, {useFindAndModify: false}).then(data => console.log(data)).catch(err=> console.error(err));
+            return user;
+        }
     
     };
 
 }
-
-
 
 
 

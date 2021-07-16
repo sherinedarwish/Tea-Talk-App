@@ -43,14 +43,13 @@
             <h1 class="text-center mb-3">View All People</h1>
 
             <body>
-                <div class="table-data">
-                    <table style="padding: 10px">
+                <div class="table-data text-center mb-3">
+                    <table >
                         <tr>
-                            <th>. &ensp;</th>
-                            <th>Name &emsp;&emsp;&emsp;&emsp;</th>
-                            <th>Email &emsp;&emsp;&emsp;&emsp; &emsp;&emsp;</th>
-                            <th>Add &emsp;&emsp;&emsp;&emsp; &emsp;&emsp;&emsp;&emsp;</th>
-                            <th>Delete &ensp;</th>
+                            <th>. </th>
+                            <th>Name </th>
+                            <th>Email</th>
+                            <th>Add</th>
                         </tr>
 
                         <% var i=1; %>
@@ -72,19 +71,7 @@
                                     </button>
                                 </form>
                             </td>
-                            <td>
-                                <form
-                                    action="/delete/<%= item._id %>?_method=DELETE"
-                                    method="POST"
-                                >
-                                    <button
-                                        type="submit"
-                                        class="btn btn-danger btn-block"
-                                    >
-                                        Delete
-                                    </button>
-                                </form>
-                            </td>
+                            
                         </tr>
                         <% i++; }) %>
                     </table>

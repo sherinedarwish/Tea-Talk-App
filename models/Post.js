@@ -15,5 +15,9 @@ const PostSchema = new mongoose.Schema({
     }
 });
 
+PostSchema.index({ title: 'text', description: 'text', tags: 'text' });
+
 const PostModel = mongoose.model("post", PostSchema,'posts');
+PostModel.createIndexes();
+
 module.exports = PostModel;

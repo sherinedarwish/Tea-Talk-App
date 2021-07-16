@@ -6,9 +6,11 @@ const getusers = require("../config/services").getusers;
 const getpostsByUser = require("../config/services").getpostsByUser;
 const deletepost = require("../config/services").deletepost;
 const addfriend = require("../config/services").addfriend;
-
+const getpostbysearch= require("../config/services").getpostbysearch;
 
 const { ensureAuthenticated } = require("../config/auth");
+const Post = require("../models/Post");
+
 
 // Welcome Page
 router.get("/", (req, res, next) => {
@@ -27,6 +29,23 @@ router.post("/dashboard", ensureAuthenticated,async function (req, res, next) {
     await createpost(req, res);
     res.render("dashboard", { name: req.user.name });
 });
+
+
+// // Profile page
+// router.get("/search", ensureAuthenticated, async function (req, res, next) {
+//    // const data = await getpostbysearch(req);
+//     res.render("search", { user: req.user })
+// });
+
+
+router.post('/search', ensureAuthenticated, async (req, res) => {
+    const { searchtext } = req.body;
+    
+    const posts = await Post.find({$text: {$search: searchtext}})
+    console.log(posts);
+    res.render('search', {posts:posts,  searchtext: searchtext});
+   
+   })
 
 // GET ALL PEOPLE PAGE
 router.get("/people", ensureAuthenticated, async function (req, res, next) {
