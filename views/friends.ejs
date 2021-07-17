@@ -44,7 +44,7 @@
 
             
                 <div class="table-data text-center mb-3" >
-                    <table >
+                    <table > 
                         <tr>
                             <th >.</th>
                             <th>Name </th>
@@ -52,6 +52,30 @@
                             <th>Delete</th>
                         </tr>
 
+
+
+                        <% var i=1; %>
+                        <% data.forEach(function(item){ %>
+                        <tr>
+                            <td><%=i; %></td>
+                            <td><%=item.name %></td>
+                            <td><%=item.email %></td>
+                            <td>
+                                <form
+                                    action="/delete/<%= item._id %>"
+                                    method="POST"
+                                >
+                                    <button
+                                        type="submit"
+                                        class="btn btn-danger btn-block"
+                                    >
+                                        Delete Friend
+                                    </button>
+                                </form>
+                            </td>
+                            
+                        </tr>
+                        <% i++; }) %>
                     </table>
                 </div>
            

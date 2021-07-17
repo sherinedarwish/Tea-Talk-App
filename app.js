@@ -7,6 +7,8 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const expressLayouts = require("express-ejs-layouts");
 const mongoose = require("mongoose");
+const redis = require("redis");
+
 const passport= require("passport");
 const flash = require("connect-flash");
 const session = require("express-session");

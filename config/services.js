@@ -5,10 +5,10 @@ const User = require("../models/User");
 async function createpost(req, res) {
     const userId = req.user._id;
     const { text } = req.body;
-
     const newpost = new Post({
         text,
         userId,
+        userName
     });
 
     newpost
@@ -17,7 +17,22 @@ async function createpost(req, res) {
             console.log("New post Saved");
         })
         .catch((err) => console.log(err));
+
+    
 }
+
+// edit profile
+async function editprofile(req) {
+    const { name, email, password, password2 } = req.body;
+    if(name)
+        User.findByIdAndUpdate(req.user._id, {name: name},{new:true, useFindAndModify:false}).then(data => console.log(data)).catch(err=> console.error(err));
+    if(email)
+        User.findByIdAndUpdate(req.user._id, {email: email},{new:true, useFindAndModify:false}).then(data => console.log(data)).catch(err=> console.error(err));
+    
+}
+
+
+
 
 // GET ALL USERS
 async function getusers(req) {
@@ -25,10 +40,26 @@ async function getusers(req) {
     return data;
 }
 
+
+async function getfriends(req) {
+    const friends = req.user.friends;
+    var arrayfriends = [];
+    await friends.forEach(async function(item){
+        const frienddata = await User.findById(item).catch((err) => console.error(err));
+        arrayfriends.push(frienddata);
+    })
+    
+    return arrayfriends;
+    
+}
+
 // GET METHOD
-async function getposts(req, res) {
-    const data = await Post.find().catch((err) => console.error(err));
-    return data;
+async function getposts(req) {
+    const { searchtext } = req.body;
+    const posts = await Post.find({text: {$regex : /searchtext/}});
+
+    console.log(posts);
+    return posts;
 }
 
 // GET CONTACTS FROM ID
@@ -102,6 +133,8 @@ module.exports = {
     deletepost,
     getpostsByUser,
     getpost,
+    getposts,
     getusers,
-    addfriend
+    addfriend,
+    getfriends
 };

@@ -1,20 +1,32 @@
 const express = require("express");
 const router = express.Router();
 const createpost = require("../config/services").createpost;
-const getpost = require("../config/services").getpost;
+const getposts = require("../config/services").getposts;
 const getusers = require("../config/services").getusers;
 const getpostsByUser = require("../config/services").getpostsByUser;
 const deletepost = require("../config/services").deletepost;
 const addfriend = require("../config/services").addfriend;
 const getpostbysearch= require("../config/services").getpostbysearch;
+const getfriends= require("../config/services").getfriends;
 
 const { ensureAuthenticated } = require("../config/auth");
 const Post = require("../models/Post");
+const User = require("../models/User");
 
 
 // Welcome Page
 router.get("/", (req, res, next) => {
     res.render("index", { title: "TEA TALK" });
+});
+
+
+// POST METHOD
+router.post("/dashboard", ensureAuthenticated,async function (req, res, next) {
+    await createpost(req, res)
+        .then((done) =>
+            res.render("dashboard", { name: req.user.name })
+        );
+    
 });
 
 // Dashboard page
@@ -23,12 +35,6 @@ router.get("/dashboard", ensureAuthenticated, async function (req, res, next) {
     res.render("dashboard", {name: req.user.name , data:data })
 });
 
-
-// POST METHOD
-router.post("/dashboard", ensureAuthenticated,async function (req, res, next) {
-    await createpost(req, res);
-    res.render("dashboard", { name: req.user.name });
-});
 
 
 // // Profile page
@@ -41,11 +47,10 @@ router.post("/dashboard", ensureAuthenticated,async function (req, res, next) {
 router.post('/search', ensureAuthenticated, async (req, res) => {
     const { searchtext } = req.body;
     
-    const posts = await Post.find({$text: {$search: searchtext}})
-    console.log(posts);
-    res.render('search', {posts:posts,  searchtext: searchtext});
+    const data = await getposts(req);
+    res.render('search', {posts:data,  searchtext: searchtext});
    
-   })
+})
 
 // GET ALL PEOPLE PAGE
 router.get("/people", ensureAuthenticated, async function (req, res, next) {
@@ -63,7 +68,8 @@ router.post("/add/:id", ensureAuthenticated, async function (req, res, next) {
 
 // GET ALL FRIENDS PAGE
 router.get("/friends", ensureAuthenticated, async function (req, res, next) {
-    const data = await getusers(req);
+    const data = await getfriends(req);
+    console.log("friends are = " , data)
     res.render("friends", { data:data });
 });
 
@@ -86,8 +92,61 @@ router.get("/editprofile", ensureAuthenticated, (req, res) =>
 // Edit
 router.put("/editprofile", ensureAuthenticated, async (req, res) => {
     const { name, email, password, password2 } = req.body;
-    console.log("new data= ", name , email, password, password2);
-    //const data = await getpost(req);
+    const errors = [];
+
+    if (password !== password2) {
+        errors.push({ msg: "Passwords do not match" });
+    }
+    // Check password length
+    if( password.length < 6)
+    {
+        errors.push ({ msg:"Password is too short"});
+    }
+    if (errors.length > 0 )
+    {
+        res.render('register',{ 
+            errors,
+            name,
+            email,
+            password,
+            password2
+        });
+        console.log(errors);
+    }
+    else
+    {
+        // Validation Pass
+        User.findOne({ email:email })
+        .then(user => {
+            if(user)
+            {
+                // USER EXISTS
+                errors.push({ msg: "Email is already registered"});
+                res.render('register',{ 
+                    errors,
+                    name,
+                    email,
+                    password,
+                    password2
+                });
+            }
+            else
+            {
+                // Hash Password
+                bcrypt.genSalt(10,(err,salt) =>
+                    bcrypt.hash(password , salt , (err, hash) => {  password = hash }));
+                       
+                User.findByIdAndUpdate(req.user._id, {name: name , email:email , password:password , password2:password2},{new:true, useFindAndModify:false})
+                .then(user => {
+                    res.redirect('/profile')})
+                .catch(err=> console.error(err));
+            }
+        })
+
+    }
+
+
+ //   await editprofile(req);
     res.render("profile", { user: req.user });
 });
 

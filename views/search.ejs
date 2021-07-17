@@ -51,10 +51,26 @@
         Searched Posts with "<%= searchtext %> "
         </div>
         <div class="row mt-5">
-        <div class="col-md-6 m-auto">
+          <div class="col-md-6 m-auto">
             
+              <% var i=1; %>
+              <% posts.forEach(function(item){ %>
+
+                <div class="input-group-prepend">
+                  <span class="input-group-text"><%=item.text %></span>
+                </div>
+                
+                <input 
+                class="form-control"  
+                type="text" 
+                name="telnum" 
+                value="<%=item.text %>" 
+                readonly="readonly" 
+                />
+        
+              <% i++; }) %>
             
-        </div>
+          </div>
         </div>
 
 
