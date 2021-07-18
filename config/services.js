@@ -4,6 +4,7 @@ const User = require("../models/User");
 //POST METHOD
 async function createpost(req, res) {
     const userId = req.user._id;
+    const userName = req.user.name;
     const { text } = req.body;
     const newpost = new Post({
         text,
@@ -11,13 +12,14 @@ async function createpost(req, res) {
         userName
     });
 
-    newpost
+    const response = await newpost
         .save()
         .then((post) => {
             console.log("New post Saved");
         })
         .catch((err) => console.log(err));
 
+    return response;
     
 }
 
@@ -31,32 +33,17 @@ async function editprofile(req) {
     
 }
 
-
-
-
 // GET ALL USERS
 async function getusers(req) {
     const data = await User.find().catch((err) => console.error(err));
     return data;
 }
 
-
-async function getfriends(req) {
-    const friends = req.user.friends;
-    var arrayfriends = [];
-    await friends.forEach(async function(item){
-        const frienddata = await User.findById(item).catch((err) => console.error(err));
-        arrayfriends.push(frienddata);
-    })
-    
-    return arrayfriends;
-    
-}
-
 // GET METHOD
 async function getposts(req) {
     const { searchtext } = req.body;
-    const posts = await Post.find({text: {$regex : /searchtext/}});
+    const regex = new RegExp(searchtext,"i");
+    const posts = await Post.find({text: {$regex : regex}});
 
     console.log(posts);
     return posts;
@@ -85,6 +72,25 @@ async function getpost(req) {
         console.error(err)
     );
     return data;
+}
+
+
+async function getfriends(req) {
+    const friends = req.user.friends;
+    var arrayfriends = [];
+    
+    for(let i=0;i<friends.length;i++)
+    {
+        const frienddata = await User.findById(friends[i]).catch((err) => console.error(err));
+        arrayfriends.push(frienddata);
+    }
+    
+    // friends.forEach(async function(item){
+    //     const frienddata = await User.findById(item).catch((err) => console.error(err));
+    //     arrayfriends.push(frienddata);
+    // })
+    
+    return arrayfriends;    
 }
 
 // Add friend
@@ -124,8 +130,6 @@ async function addfriend(req,res) {
     };
 
 }
-
-
 
 module.exports = {
     createpost,

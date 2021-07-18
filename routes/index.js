@@ -22,10 +22,10 @@ router.get("/", (req, res, next) => {
 
 // POST METHOD
 router.post("/dashboard", ensureAuthenticated,async function (req, res, next) {
-    await createpost(req, res)
-        .then((done) =>
-            res.render("dashboard", { name: req.user.name })
-        );
+    const response = await createpost(req, res);
+    const allPosts = await getpostsByUser(req);   
+    res.render("dashboard", { name: req.user.name , data: allPosts})
+        
     
 });
 
@@ -46,7 +46,6 @@ router.get("/dashboard", ensureAuthenticated, async function (req, res, next) {
 
 router.post('/search', ensureAuthenticated, async (req, res) => {
     const { searchtext } = req.body;
-    
     const data = await getposts(req);
     res.render('search', {posts:data,  searchtext: searchtext});
    
@@ -69,7 +68,7 @@ router.post("/add/:id", ensureAuthenticated, async function (req, res, next) {
 // GET ALL FRIENDS PAGE
 router.get("/friends", ensureAuthenticated, async function (req, res, next) {
     const data = await getfriends(req);
-    console.log("friends are = " , data)
+    console.log("friends are = " , data) 
     res.render("friends", { data:data });
 });
 

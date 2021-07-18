@@ -1,5 +1,5 @@
 require("dotenv").config();
-require('./helpers/init_redis');
+const redisClient = require('./helpers/init_redis');
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
@@ -8,11 +8,11 @@ var logger = require('morgan');
 const expressLayouts = require("express-ejs-layouts");
 const mongoose = require("mongoose");
 const redis = require("redis");
-
 const passport= require("passport");
 const flash = require("connect-flash");
 const session = require("express-session");
 const methodOverride = require("method-override");
+const redisStore = require('connect-redis')(session);   
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -53,9 +53,17 @@ app.use(methodOverride("_method"));
 // Express session
 app.use(
   session({
-      secret: "secret",
-      resave: true,
-      saveUninitialized: true,
+    
+    store: new redisStore({ 
+      host: 'localhost', 
+      port: 6379, 
+      client: redisClient 
+    }),
+    name: '_redisDemo', 
+    secret: 'secret',
+    resave: false,
+    cookie: { secure: false, maxAge: 600000 }, // Set to secure:false and expire in 1 minute for demo purposes
+    saveUninitialized: true
   })
 );
 
