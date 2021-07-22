@@ -4,8 +4,8 @@
   "private": true,
   "main": "app.js",
   "scripts": {
-    "start": "node ./bin/www",
-    "dev": "SET DEBUG=tea-talk:* & nodemon ./bin/www "
+    "start": "npm install & node ./bin/www",
+    "dev": " nodemon app.js "
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
