@@ -1,13 +1,15 @@
 const express = require("express");
 const router = express.Router();
 const createpost = require("../config/services").createpost;
-const getposts = require("../config/services").getposts;
+const getpostsbySearch = require("../config/services").getpostsbySearch;
 const getusers = require("../config/services").getusers;
 const getpostsByUser = require("../config/services").getpostsByUser;
 const deletepost = require("../config/services").deletepost;
 const addfriend = require("../config/services").addfriend;
-const getpostbysearch= require("../config/services").getpostbysearch;
 const getfriends= require("../config/services").getfriends;
+const deletefriend= require("../config/services").deletefriend;
+const getAllPosts= require("../config/services").getAllPosts;
+const getNamesforAllPosts= require("../config/services").getNamesforAllPosts;
 
 const { ensureAuthenticated } = require("../config/auth");
 const Post = require("../models/Post");
@@ -23,53 +25,46 @@ router.get("/", (req, res, next) => {
 // POST METHOD
 router.post("/dashboard", ensureAuthenticated,async function (req, res, next) {
     const response = await createpost(req, res);
-    const allPosts = await getpostsByUser(req);   
-    res.render("dashboard", { name: req.user.name , data: allPosts})
+    const allPosts = await getAllPosts(req);   
+    const allNames = await getNamesforAllPosts(req);   
+    res.render("dashboard", { name: req.user.name , data: allPosts , names: allNames})
         
     
 });
 
 // Dashboard page
 router.get("/dashboard", ensureAuthenticated, async function (req, res, next) {
-    const data = await getpostsByUser(req);
-    res.render("dashboard", {name: req.user.name , data:data })
+    const data = await getAllPosts(req);
+    const allNames = await getNamesforAllPosts(req);   
+    res.render("dashboard", {name: req.user.name , data:data , names: allNames})
 });
 
-
-
-// // Profile page
-// router.get("/search", ensureAuthenticated, async function (req, res, next) {
-//    // const data = await getpostbysearch(req);
-//     res.render("search", { user: req.user })
-// });
-
-
+// Search for a post 
 router.post('/search', ensureAuthenticated, async (req, res) => {
     const { searchtext } = req.body;
-    const data = await getposts(req);
+    const data = await getpostsbySearch(req);
     res.render('search', {posts:data,  searchtext: searchtext});
    
 })
+
+// Add a friend
+router.post("/add/:id", ensureAuthenticated, async function (req, res, next) {
+    await addfriend(req,res);
+   res.render("friends", { user: req.user });
+});
+
+
+// GET ALL FRIENDS PAGE
+router.get("/friends", ensureAuthenticated, async function (req, res, next) {
+    const data = await getfriends(req); 
+    //console.log("friends are = " , data) 
+    res.render("friends", { data:data });
+});
 
 // GET ALL PEOPLE PAGE
 router.get("/people", ensureAuthenticated, async function (req, res, next) {
     const data = await getusers(req);
     res.render("people", { data:data });
-});
-
-
-router.post("/add/:id", ensureAuthenticated, async function (req, res, next) {
-     await addfriend(req,res);
-    res.render("friends", { user: req.user });
-});
-
-
-
-// GET ALL FRIENDS PAGE
-router.get("/friends", ensureAuthenticated, async function (req, res, next) {
-    const data = await getfriends(req);
-    console.log("friends are = " , data) 
-    res.render("friends", { data:data });
 });
 
 
@@ -81,14 +76,10 @@ router.get("/profile", ensureAuthenticated, async function (req, res, next) {
 
 // Edit profile
 router.get("/editprofile", ensureAuthenticated, (req, res) =>
-    res.render("editprofile", {
-        user: req.user
-    })
+    res.render("editprofile", { user: req.user})
 );
 
-
-
-// Edit
+// Edit profile by method put
 router.put("/editprofile", ensureAuthenticated, async (req, res) => {
     const { name, email, password, password2 } = req.body;
     const errors = [];
@@ -150,7 +141,29 @@ router.put("/editprofile", ensureAuthenticated, async (req, res) => {
 });
 
 
-router.delete("/delete/:id", ensureAuthenticated, async (req, res) => {
+// Edit profile by method put
+router.put("/editpost/:id", ensureAuthenticated, async (req, res) => {
+    const { text } = req.body;
+    const postId = req.params.id;
+    Post.findByIdAndUpdate(postId, {text},{new:true, useFindAndModify:false})
+    .then(user => {
+        res.redirect('/profile')})
+    .catch(err=> console.error(err));
+          
+    
+
+
+ //   await editprofile(req);
+    res.render("profile", { user: req.user });
+});
+
+// Delete the user's post
+router.delete("/deletepost/:id", ensureAuthenticated, async (req, res) => {
     await deletepost(req, res);
+});
+
+// Delete a friend
+router.delete("/deletefriend/:id", ensureAuthenticated, async (req, res) => {
+    await deletefriend(req, res);
 });
 module.exports = router;

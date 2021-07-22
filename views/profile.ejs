@@ -14,7 +14,7 @@
           <a class="nav-link" href="/dashboard">Home <span class="sr-only">(current)</span></a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="/dashboard">People</a>
+          <a class="nav-link" href="/people">People</a>
         </li>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -30,8 +30,8 @@
         </li>
         
       </ul>
-      <form class="form-inline my-2 my-lg-0">
-        <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" >
+      <form class="form-inline my-2 my-lg-0" action="/search" method="POST">
+        <input class="form-control mr-sm-2" type="search" placeholder="Search for a post" aria-label="Search" name="searchtext" >
         <button class="btn btn-outline-success my-2 my-sm-0 " type="submit">Search</button>
       </form>
     </div>
@@ -44,7 +44,6 @@
     <div class="row">
         <div class="col-sm-4 ">
             <img src="images/person1.png" alt="Fb" style='width:350px; height:250px; float:center;'></a>
-
         </div>
         
         <div class="col-sm-6">
@@ -54,45 +53,40 @@
                   <div class="card-header">
                     My Posts
                   </div>
+                  <div class="input-group-prepend">
+                    <span class="input-group-text"><%= user.name %></span>
+                  </div>
 
 
+                  <div>
+                    <% var i=1; %>
+                    <% data.forEach(function(item){ %>
+    
+                      <input 
+                      class="form-control"  
+                      type="text" 
+                      name="telnum" 
+                      value="<%=item.text %>" 
+                      readonly="readonly" />
 
+                      <form action="/deletepost/<%= item._id %>?_method=DELETE"method="POST">
+                      <button
+                          type="submit"
+                          class="btn btn-danger btn"> X
+                      </button>
+                      </form>
 
-                  <% var i=1; %>
-                  <% data.forEach(function(item){ %>
-  
-                    <div class="input-group-prepend">
-                      <span class="input-group-text"><%= user.name %></span>
-                    </div>
-                    
-                    <input 
-                    class="form-control"  
-                    type="text" 
-                    name="telnum" 
-                    value="<%=item.text %>" 
-                    readonly="readonly" 
-                    />
-
-                    <form
-                      action="/delete/<%= item._id %>?_method=DELETE"
-                      method="POST"
-                    >
-                    <button
-                        type="submit"
-                        class="btn btn-danger btn"
-                    >
-                        X
-                    </button>
-                  </form>
+                      <form action="/editpost/<%= item._id %>?_method=PUT" method="POST">
+                        <button
+                            type="submit"
+                            class="btn btn-primary btn" > Edit
+                        </button>
+                      </form>
             
-                  <% i++; }) %>
-                
-
-
-
-
-                </div>
+                    <% i++; }) %>
+                  </div>
             </div>
+          </div>
         </div>
 
 </body>

@@ -23,38 +23,22 @@ async function createpost(req, res) {
     
 }
 
-// edit profile
-async function editprofile(req) {
-    const { name, email, password, password2 } = req.body;
-    if(name)
-        User.findByIdAndUpdate(req.user._id, {name: name},{new:true, useFindAndModify:false}).then(data => console.log(data)).catch(err=> console.error(err));
-    if(email)
-        User.findByIdAndUpdate(req.user._id, {email: email},{new:true, useFindAndModify:false}).then(data => console.log(data)).catch(err=> console.error(err));
-    
-}
-
-// GET ALL USERS
-async function getusers(req) {
-    const data = await User.find().catch((err) => console.error(err));
-    return data;
-}
-
-// GET METHOD
-async function getposts(req) {
-    const { searchtext } = req.body;
-    const regex = new RegExp(searchtext,"i");
-    const posts = await Post.find({text: {$regex : regex}});
-
-    console.log(posts);
-    return posts;
-}
-
 // GET CONTACTS FROM ID
 async function getpostsByUser(req) {
     const userID = req.user._id;
 
     const data = await Post.find({ userId: userID }).catch((err) => console.error(err));
     return data;
+}
+
+// GET METHOD
+async function getpostsbySearch(req) {
+    const { searchtext } = req.body;
+    const regex = new RegExp(searchtext,"i");
+    const posts = await Post.find({text: {$regex : regex}});
+
+    console.log(posts);
+    return posts;
 }
 
 // Delete Method
@@ -74,7 +58,49 @@ async function getpost(req) {
     return data;
 }
 
+// Get all posts
+async function getAllPosts(req) {
+    const data = await Post.find().catch((err) =>console.error(err));
+    return data;
+}
 
+// Get names for all posts
+async function getNamesforAllPosts(req) {
+    const data = await Post.find().catch((err) =>console.error(err));
+    var i =0;
+    var array = [];
+
+    for(i=0;i<data.length;i++)
+    {
+        const user = await User.findById(data[i].userId).catch((err) =>console.error(err));
+        console.log(user);
+        array.push(user.name);
+    }
+    return array;
+}
+
+                            //////////////////////////////////// Users ///////////////////////////////////////////////
+// GET ALL USERS
+async function getusers(req) {
+    const data = await User.find().catch((err) => console.error(err));
+    const userID = req.user._id;
+    var i =0;
+
+    data.forEach(function(obj)
+    {
+
+        if (obj.id == userID)
+        {
+            index = i;
+            data.splice(index, 1);
+        }
+        i++;
+    })
+
+    return data;
+}
+
+// Get All Friends
 async function getfriends(req) {
     const friends = req.user.friends;
     var arrayfriends = [];
@@ -102,7 +128,7 @@ async function addfriend(req,res) {
     const Newfriend = await User.findById(friendId).catch((err) => console.error(err));
 
     const friends = user.friends;
-    var i = 0;
+    var m = 0;
     if (friends.length === 0)
     { 
         friends.push(Newfriend._id);
@@ -111,16 +137,15 @@ async function addfriend(req,res) {
     }
     else
     {
-        friends.forEach((friend)=>
+        for(let i=0;i<friends.length;i++)
         {
-            if(Newfriend._id.equals(friend))
+            if(Newfriend._id.equals(friends[i]))
             {   
-                i = 1;
+                m = 1;
                 return user;
             }
-            
-        })
-        if (i == 0)
+        }
+        if (m == 0)
         {
             friends.push(Newfriend._id);
             User.findByIdAndUpdate(user._id,{friends}, {useFindAndModify: false}).then(data => console.log(data)).catch(err=> console.error(err));
@@ -131,13 +156,57 @@ async function addfriend(req,res) {
 
 }
 
+// delete friend
+async function deletefriend(req, res) {
+    const friendId = req.params.id;
+    console.log("friend id= ", friendId);
+
+    var friends = req.user.friends;
+    console.log("friends list beforeeeee= ", friends);
+
+    var i =0;
+    for(i=0;i<friends.length;i++)
+    {
+        if(friendId==friends[i])
+        {   
+            index = i;
+            console.log("found here a match at index " , index );
+            friends.splice(index, 1);
+        }
+    }
+    
+    console.log("friends list afterrrrrr= ", friends);
+
+    User.findByIdAndUpdate(req.user._id,{friends}, {useFindAndModify: false}).then(data => console.log(data)).catch(err=> console.error(err));
+    res.redirect("/friends");
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 module.exports = {
+    deletefriend,
     createpost,
+    getNamesforAllPosts,
     getpost,
+    getAllPosts,
     deletepost,
     getpostsByUser,
     getpost,
-    getposts,
+    getpostsbySearch,
     getusers,
     addfriend,
     getfriends
