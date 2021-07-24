@@ -27,7 +27,14 @@ const UserSchema = new mongoose.Schema({
     friends: [{ 
         type : mongoose.Schema.Types.ObjectId, 
         ref: 'User' 
-    }]
+    }],
+    avatar: {
+        type: String,
+    },
+    cloudinary_id: {
+        type: String,
+    },
+
 });
 
 UserSchema.plugin(findOrCreate);

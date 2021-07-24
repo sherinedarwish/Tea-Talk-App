@@ -1,5 +1,6 @@
 const Post = require("../models/Post");
 const User = require("../models/User");
+const { post } = require("../routes");
 
 //POST METHOD
 async function createpost(req, res) {
@@ -49,7 +50,7 @@ async function deletepost(req, res) {
     res.redirect("/profile");
 }
 
-// Update posts
+// get posts
 async function getpost(req) {
     const postId = req.params.id;
     const data = await Post.findById(postId).catch((err) =>
@@ -60,8 +61,43 @@ async function getpost(req) {
 
 // Get all posts
 async function getAllPosts(req) {
-    const data = await Post.find().catch((err) =>console.error(err));
-    return data;
+
+    const allposts = await Post.find().catch((err) =>console.error(err));
+    const friends = req.user.friends;
+    var array = [];
+
+    for(var i=0;i<allposts.length;i++)
+    {
+        if(allposts)
+        {
+            if(friends!="")
+            {
+                for(var j=0;j<friends.length;j++)
+                {
+                
+                    if(allposts[i].userId.equals(friends[j]))
+                    {
+                        array.push(allposts[i]);
+                    }
+                    if(allposts[i].userId.equals(req.user._id))
+                    {
+                        array.push(allposts[i]);
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                const userID = req.user._id;
+                const data = await Post.find({ userId: userID }).catch((err) => console.error(err));
+                return data;
+            }
+            
+        }
+        else
+            break;
+    }
+    return array;
 }
 
 // Get names for all posts
@@ -69,11 +105,11 @@ async function getNamesforAllPosts(req) {
     const data = await Post.find().catch((err) =>console.error(err));
     var i =0;
     var array = [];
+    const friends = req.user.friends;
 
     for(i=0;i<data.length;i++)
     {
         const user = await User.findById(data[i].userId).catch((err) =>console.error(err));
-        console.log(user);
         array.push(user.name);
     }
     return array;
@@ -148,21 +184,18 @@ async function addfriend(req,res) {
         if (m == 0)
         {
             friends.push(Newfriend._id);
-            User.findByIdAndUpdate(user._id,{friends}, {useFindAndModify: false}).then(data => console.log(data)).catch(err=> console.error(err));
+            User.findByIdAndUpdate(user._id,{friends}, {useFindAndModify: false}).catch(err=> console.error(err));
             return user;
         }
     
     };
-
 }
 
 // delete friend
 async function deletefriend(req, res) {
     const friendId = req.params.id;
-    console.log("friend id= ", friendId);
 
     var friends = req.user.friends;
-    console.log("friends list beforeeeee= ", friends);
 
     var i =0;
     for(i=0;i<friends.length;i++)
@@ -170,14 +203,12 @@ async function deletefriend(req, res) {
         if(friendId==friends[i])
         {   
             index = i;
-            console.log("found here a match at index " , index );
             friends.splice(index, 1);
         }
     }
     
-    console.log("friends list afterrrrrr= ", friends);
 
-    User.findByIdAndUpdate(req.user._id,{friends}, {useFindAndModify: false}).then(data => console.log(data)).catch(err=> console.error(err));
+    User.findByIdAndUpdate(req.user._id,{friends}, {useFindAndModify: false}).catch(err=> console.error(err));
     res.redirect("/friends");
 }
 

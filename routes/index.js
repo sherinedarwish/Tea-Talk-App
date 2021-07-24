@@ -10,11 +10,11 @@ const getfriends= require("../config/services").getfriends;
 const deletefriend= require("../config/services").deletefriend;
 const getAllPosts= require("../config/services").getAllPosts;
 const getNamesforAllPosts= require("../config/services").getNamesforAllPosts;
-
+const upload = require ("../config/multer");
 const { ensureAuthenticated } = require("../config/auth");
 const Post = require("../models/Post");
 const User = require("../models/User");
-
+const cloudinary = require('cloudinary').v2;
 
 // Welcome Page
 router.get("/", (req, res, next) => {
@@ -24,7 +24,7 @@ router.get("/", (req, res, next) => {
 
 // POST METHOD
 router.post("/dashboard", ensureAuthenticated,async function (req, res, next) {
-    const response = await createpost(req, res);
+    await createpost(req, res);
     const allPosts = await getAllPosts(req);   
     const allNames = await getNamesforAllPosts(req);   
     res.render("dashboard", { name: req.user.name , data: allPosts , names: allNames})
@@ -49,8 +49,10 @@ router.post('/search', ensureAuthenticated, async (req, res) => {
 
 // Add a friend
 router.post("/add/:id", ensureAuthenticated, async function (req, res, next) {
-    await addfriend(req,res);
-   res.render("friends", { user: req.user });
+    const result = await addfriend(req,res).catch(err=> console.error(err));
+    const data = await getfriends(req); 
+
+    res.render("friends", { user: req.user , data:data});
 });
 
 
@@ -75,9 +77,25 @@ router.get("/profile", ensureAuthenticated, async function (req, res, next) {
 });
 
 // Edit profile
-router.get("/editprofile", ensureAuthenticated, (req, res) =>
+router.get("/editprofile", ensureAuthenticated, async function (req, res, next) {
+    let image_exists = 0;
+    if (req.user.cloudinary_id)
+    {
+         image_exists = 1;
+    }
+    res.render("editprofile", { user: req.user , image_exists:image_exists})
+});
+
+// Upload a picture
+router.post("/upload",upload.single('image'), ensureAuthenticated, async function (req, res, next) {
+    
+    const result = await cloudinary.uploader.upload(req.file.path);
+    console.log("result file =",result);
+
+    await User.findByIdAndUpdate(req.user._id, {avatar: result.secure_url, cloudinary_id:result.public_id},{new:true, useFindAndModify:false})
     res.render("editprofile", { user: req.user})
-);
+});
+
 
 // Edit profile by method put
 router.put("/editprofile", ensureAuthenticated, async (req, res) => {
@@ -141,7 +159,15 @@ router.put("/editprofile", ensureAuthenticated, async (req, res) => {
 });
 
 
-// Edit profile by method put
+// Edit a post
+router.get("/editpost/:id", ensureAuthenticated, async (req, res) => {
+    const postId = req.params.id;
+    const data = await Post.findById(req.params.id).catch(err=> console.error(err));
+    console.log(data);
+    res.render("editpost", {data:data });
+});
+
+//Edit profile by method put
 router.put("/editpost/:id", ensureAuthenticated, async (req, res) => {
     const { text } = req.body;
     const postId = req.params.id;
@@ -150,11 +176,6 @@ router.put("/editpost/:id", ensureAuthenticated, async (req, res) => {
         res.redirect('/profile')})
     .catch(err=> console.error(err));
           
-    
-
-
- //   await editprofile(req);
-    res.render("profile", { user: req.user });
 });
 
 // Delete the user's post

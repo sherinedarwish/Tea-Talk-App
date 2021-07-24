@@ -13,7 +13,7 @@ const flash = require("connect-flash");
 const session = require("express-session");
 const methodOverride = require("method-override");
 const redisStore = require('connect-redis')(session);   
-
+var cloudinary = require('cloudinary').v2;
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
@@ -49,6 +49,11 @@ mongoose
 // Method Override
 app.use(methodOverride("_method"));
 
+cloudinary.config({ 
+  cloud_name: 'sherine', 
+  api_key: process.env.API_KEY, 
+  api_secret:  process.env.API_SECRET 
+});
 
 // Express session
 app.use(
@@ -62,7 +67,7 @@ app.use(
     name: '_redisDemo', 
     secret: 'secret',
     resave: false,
-    cookie: { secure: false, maxAge: 600000 }, // Set to secure:false and expire in 1 minute for demo purposes
+    cookie: { secure: false, maxAge: 6000000 }, // Set to secure:false and expire in 1 minute for demo purposes
     saveUninitialized: true
   })
 );
