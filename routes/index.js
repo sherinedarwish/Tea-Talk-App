@@ -25,18 +25,13 @@ router.get("/", (req, res, next) => {
 // POST METHOD
 router.post("/dashboard", ensureAuthenticated,async function (req, res, next) {
     await createpost(req, res);
-    const allPosts = await getAllPosts(req);   
-    const allNames = await getNamesforAllPosts(req);   
-    res.render("dashboard", { name: req.user.name , data: allPosts , names: allNames})
-        
-    
+    await getAllPosts(req,res);       
 });
 
 // Dashboard page
 router.get("/dashboard", ensureAuthenticated, async function (req, res, next) {
-    const data = await getAllPosts(req);
-    const allNames = await getNamesforAllPosts(req);   
-    res.render("dashboard", {name: req.user.name , data:data , names: allNames})
+    await getAllPosts(req,res);   
+    
 });
 
 // Search for a post 
@@ -73,7 +68,12 @@ router.get("/people", ensureAuthenticated, async function (req, res, next) {
 // Profile page
 router.get("/profile", ensureAuthenticated, async function (req, res, next) {
     const data = await getpostsByUser(req);
-    res.render("profile", { user: req.user , data:data })
+    let image_exists = 0;
+    if (req.user.cloudinary_id)
+    {
+         image_exists = 1;
+    }
+    res.render("profile", { user: req.user , data:data  , image_exists:image_exists})
 });
 
 // Edit profile
@@ -88,12 +88,34 @@ router.get("/editprofile", ensureAuthenticated, async function (req, res, next) 
 
 // Upload a picture
 router.post("/upload",upload.single('image'), ensureAuthenticated, async function (req, res, next) {
-    
-    const result = await cloudinary.uploader.upload(req.file.path);
-    console.log("result file =",result);
+    let image_exists = 0;
+    if (req.user.cloudinary_id )
+    {
+        await cloudinary.uploader.destroy(req.user.cloudinary_id);
+        image_exists = 1;
+        const result = await cloudinary.uploader.upload(req.file.path);
+        console.log("result file =",result);
+        await User.findByIdAndUpdate(req.user._id, {avatar: result.secure_url, cloudinary_id:result.public_id},{new:true, useFindAndModify:false})
+        res.render("editprofile", { user: req.user, image_exists:image_exists})
+    }
+    else
+    {
+        const result = await cloudinary.uploader.upload(req.file.path);
+        console.log("result file =",result);
 
-    await User.findByIdAndUpdate(req.user._id, {avatar: result.secure_url, cloudinary_id:result.public_id},{new:true, useFindAndModify:false})
-    res.render("editprofile", { user: req.user})
+        await User.findByIdAndUpdate(req.user._id, {avatar: result.secure_url, cloudinary_id:result.public_id},{new:true, useFindAndModify:false})
+        res.render("editprofile", { user: req.user, image_exists:image_exists})
+    }
+});
+
+//delete a picture
+router.delete("/deleteAvatar", ensureAuthenticated, async function (req, res, next) {
+    
+    await cloudinary.uploader.destroy(req.user.cloudinary_id);
+    let image_exists = 0;
+    const result = await User.updateOne({$unset: { avatar: "" , cloudinary_id: ""}});
+    console.log("result",result);
+    res.redirect("/editprofile");
 });
 
 

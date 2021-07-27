@@ -60,28 +60,34 @@ async function getpost(req) {
 }
 
 // Get all posts
-async function getAllPosts(req) {
+async function getAllPosts(req,res) {
+    console.log("get all posts function here" );
 
     const allposts = await Post.find().catch((err) =>console.error(err));
     const friends = req.user.friends;
     var array = [];
-
+    var names= []
     for(var i=0;i<allposts.length;i++)
     {
         if(allposts)
         {
+            console.log("all posts" );
             if(friends!="")
             {
+
                 for(var j=0;j<friends.length;j++)
-                {
-                
+                {                
                     if(allposts[i].userId.equals(friends[j]))
                     {
                         array.push(allposts[i]);
+                        const data = await User.findById({ _id: friends[j]}).catch((err) => console.error(err));
+                        names.push(data.name)
                     }
                     if(allposts[i].userId.equals(req.user._id))
                     {
                         array.push(allposts[i]);
+                        names.push(req.user.name)
+
                         break;
                     }
                 }
@@ -90,29 +96,32 @@ async function getAllPosts(req) {
             {
                 const userID = req.user._id;
                 const data = await Post.find({ userId: userID }).catch((err) => console.error(err));
-                return data;
+                names.push(req.user.name)
+               // res.render("dashboard", {name: req.user.name , data:array , names: names})
+
             }
             
         }
         else
             break;
     }
-    return array;
+    res.render("dashboard", {name: req.user.name , data:array , names: names})
+    //return array , names;
 }
 
 // Get names for all posts
 async function getNamesforAllPosts(req) {
-    const data = await Post.find().catch((err) =>console.error(err));
-    var i =0;
-    var array = [];
+    const allposts = await Post.find().catch((err) =>console.error(err));
     const friends = req.user.friends;
-
-    for(i=0;i<data.length;i++)
+    const friendaccount = []
+    for(var i=0;i<friends.length;i++)
     {
-        const user = await User.findById(data[i].userId).catch((err) =>console.error(err));
-        array.push(user.name);
+        const data = await User.findById({ _id: friends[i]}).catch((err) => console.error(err));
+        friendaccount.push(data.name)
     }
-    return array;
+    var names = [];
+    
+    return names;
 }
 
                             //////////////////////////////////// Users ///////////////////////////////////////////////

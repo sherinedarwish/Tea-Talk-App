@@ -79,10 +79,12 @@ router.post("/register", (req, res) => {
             }
             else
             {
+                var friends = [];
                 const newUser = new User({
                     name,
                     email,
-                    password
+                    password,
+                    friends
                 });
 
                 // Hash Password

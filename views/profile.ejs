@@ -43,7 +43,14 @@
 
     <div class="row">
         <div class="col-sm-4 ">
-            <img src="images/person1.png" alt="Fb" style='width:350px; height:250px; float:center;'></a>
+          <% if(image_exists == 0){ %>
+            <img src="images/person1.png" alt="image" style='width:350px; height:250px; float: center;'></a>
+
+
+            <%} else { %>
+              <img src="<%= user.avatar %>"" alt="image" style='width:250px; height:200px; float: center;'></a>
+
+              <% } %>
         </div>
         
         <div class="col-sm-6">
