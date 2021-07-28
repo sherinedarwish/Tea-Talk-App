@@ -55,15 +55,17 @@ module.exports = function(passport)
     //       callback (null,profile);
     //   }));
 
+
+
     // Facebook 
     passport.use(new FacebookStrategy({
         clientID: process.env.CLIENT_ID_FB,
         clientSecret: process.env.CLIENT_SECRET_FB,
-        callbackURL: "http://localhost:3000/users/facebook",
+        callbackURL: "http://localhost:3000/",
         profileFields: ['id','displayName','name','email','picture.type(large)']
       },
       function(accessToken, refreshToken, profile, done) {
-
+        console.log("displayname: " , displayName);
         // asynchronous
         process.nextTick(function() {
     
@@ -83,7 +85,7 @@ module.exports = function(passport)
                     return done(null, user); // user found, return that user
                 } else {
                     // if there is no user found with that facebook id, create them
-                    var newUser            = new User();
+                    var newUser = new User();
     
                     // set all of the facebook information in our user model
                     newUser._id    = profile.id; // set the users facebook id                   

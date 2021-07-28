@@ -9,7 +9,9 @@ const addfriend = require("../config/services").addfriend;
 const getfriends= require("../config/services").getfriends;
 const deletefriend= require("../config/services").deletefriend;
 const getAllPosts= require("../config/services").getAllPosts;
+const checkfriend= require("../config/services").checkfriend;
 const getNamesforAllPosts= require("../config/services").getNamesforAllPosts;
+
 const upload = require ("../config/multer");
 const { ensureAuthenticated } = require("../config/auth");
 const Post = require("../models/Post");
@@ -23,7 +25,8 @@ router.get("/", (req, res, next) => {
 
 
 // POST METHOD
-router.post("/dashboard", ensureAuthenticated,async function (req, res, next) {
+router.post("/dashboard", ensureAuthenticated,async function (req, res, next) 
+{
     await createpost(req, res);
     await getAllPosts(req,res);       
 });
@@ -54,13 +57,14 @@ router.post("/add/:id", ensureAuthenticated, async function (req, res, next) {
 // GET ALL FRIENDS PAGE
 router.get("/friends", ensureAuthenticated, async function (req, res, next) {
     const data = await getfriends(req); 
-    //console.log("friends are = " , data) 
     res.render("friends", { data:data });
 });
 
 // GET ALL PEOPLE PAGE
 router.get("/people", ensureAuthenticated, async function (req, res, next) {
     const data = await getusers(req);
+   // const m = await checkfriend(req);
+
     res.render("people", { data:data });
 });
 

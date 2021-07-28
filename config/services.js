@@ -38,7 +38,7 @@ async function getpostsbySearch(req) {
     const regex = new RegExp(searchtext,"i");
     const posts = await Post.find({text: {$regex : regex}});
 
-    console.log(posts);
+   // console.log(posts);
     return posts;
 }
 
@@ -61,7 +61,6 @@ async function getpost(req) {
 
 // Get all posts
 async function getAllPosts(req,res) {
-    console.log("get all posts function here" );
 
     const allposts = await Post.find().catch((err) =>console.error(err));
     const friends = req.user.friends;
@@ -71,7 +70,6 @@ async function getAllPosts(req,res) {
     {
         if(allposts)
         {
-            console.log("all posts" );
             if(friends!="")
             {
 
@@ -200,6 +198,24 @@ async function addfriend(req,res) {
     };
 }
 
+
+
+async function checkfriend(req) {
+    const friendId = req.params.id;
+    const Newfriend = await User.findById(friendId).catch((err) => console.error(err));
+    const friends = req.user.friends;
+
+    var m = 0;
+
+    for(let i=0;i<friends.length;i++)
+    {
+        if(Newfriend._id.equals(friends[i]))
+        {   
+            m = 1;
+            return m;
+        }
+    }
+}
 // delete friend
 async function deletefriend(req, res) {
     const friendId = req.params.id;
@@ -249,5 +265,6 @@ module.exports = {
     getpostsbySearch,
     getusers,
     addfriend,
-    getfriends
+    getfriends,
+    checkfriend
 };

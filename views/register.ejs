@@ -7,6 +7,8 @@
                 </h1>
 
                 <form action="/users/register" method="POST">
+                    <%- include ('./partials/messages') %>
+
                     <div class="form-group">
                         <label for="name">Name</label>
                         <input
@@ -56,9 +58,6 @@
                         Register
                     </button>
                     
-
-                    <a href="/users/facebook" class="btn btn-block btn-primary"><span class="fa fa-facebook"></span> Facebook</a>
-                    <a href="/users/google" class="btn btn-block btn-danger"><span class="fa fa-google"></span> Google</a>
                 </form>
                 
                 <p class="lead mt-4">
