@@ -10,14 +10,13 @@ const getfriends= require("../config/services").getfriends;
 const deletefriend= require("../config/services").deletefriend;
 const getAllPosts= require("../config/services").getAllPosts;
 const checkfriend= require("../config/services").checkfriend;
-const getNamesforAllPosts= require("../config/services").getNamesforAllPosts;
 
+const bcrypt = require('bcryptjs');
 const upload = require ("../config/multer");
 const { ensureAuthenticated } = require("../config/auth");
 const Post = require("../models/Post");
 const User = require("../models/User");
 const cloudinary = require('cloudinary').v2;
-
 // Welcome Page
 router.get("/", (req, res, next) => {
     res.render("index", { title: "TEA TALK" });
@@ -124,10 +123,67 @@ router.delete("/deleteAvatar", ensureAuthenticated, async function (req, res, ne
 
 
 // Edit profile by method put
-router.put("/editprofile", ensureAuthenticated, async (req, res) => {
-    const { name, email, password, password2 } = req.body;
+router.put("/editusername", ensureAuthenticated, async (req, res) => {
+    const { name } = req.body;
+    await User.updateOne({_id: req.user._id}, {$set: {name: name }}).catch(err=> console.error(err));
+
+    let image_exists = 0;
+    if (req.user.cloudinary_id)
+    {
+         image_exists = 1;
+    }
+    res.redirect("/editprofile");
+});
+// Edit profile by method put
+router.put("/edituseremail", ensureAuthenticated, async (req, res) => {
+    const { email } = req.body;
     const errors = [];
 
+    if (errors.length > 0 )
+    {
+        res.render('editprofile',{ 
+            errors,
+            email
+        });
+        console.log(errors);
+    }
+    else
+    {
+        await User.findOne({ email:email })
+        .then(async function (user) {
+            if(user)
+            {
+                // USER EXISTS
+                errors.push({ msg: "Email is already registered"});
+                res.render('editprofile',{ 
+                    errors,
+                    email,
+                });
+            }
+            else
+            {
+                 await User.updateOne({_id: req.user._id}, {$set: {email: email }}).catch(err=> console.error(err));
+            }
+        })
+     }
+
+    let image_exists = 0;
+    if (req.user.cloudinary_id)
+    {
+         image_exists = 1;
+    }
+    res.redirect("/editprofile");
+});
+
+// Edit profile by method put
+router.put("/edituserpassword", ensureAuthenticated, async (req, res) => {
+    const { password, password2 } = req.body;
+    const errors = [];
+    let image_exists = 0;
+    if (req.user.cloudinary_id)
+    {
+         image_exists = 1;
+    }
     if (password !== password2) {
         errors.push({ msg: "Passwords do not match" });
     }
@@ -138,52 +194,32 @@ router.put("/editprofile", ensureAuthenticated, async (req, res) => {
     }
     if (errors.length > 0 )
     {
-        res.render('register',{ 
+        res.render('editprofile',{ 
             errors,
-            name,
-            email,
             password,
-            password2
+            password2,
+            image_exists:image_exists, user:req.user
         });
         console.log(errors);
     }
     else
-    {
-        // Validation Pass
-        User.findOne({ email:email })
-        .then(user => {
-            if(user)
-            {
-                // USER EXISTS
-                errors.push({ msg: "Email is already registered"});
-                res.render('register',{ 
-                    errors,
-                    name,
-                    email,
-                    password,
-                    password2
-                });
-            }
-            else
-            {
-                // Hash Password
-                bcrypt.genSalt(10,(err,salt) =>
-                    bcrypt.hash(password , salt , (err, hash) => {  password = hash }));
-                       
-                User.findByIdAndUpdate(req.user._id, {name: name , email:email , password:password , password2:password2},{new:true, useFindAndModify:false})
+    { 
+        // Hash Password
+        bcrypt.genSalt(10,(err,salt) =>
+            bcrypt.hash(password , salt , (err, hash) => {
+                
+                if(err) throw err;
+                // set password to hashed
+                User.updateOne({_id: req.user._id}, {$set: {password: hash }}).catch(err=> console.error(err))
                 .then(user => {
-                    res.redirect('/profile')})
-                .catch(err=> console.error(err));
-            }
-        })
+                   req.flash("success_msg","You successfully changed the password")
+                   res.redirect('/editprofile')})
+               .catch(err=> console.error(err));
+            }));
 
+            
     }
-
-
- //   await editprofile(req);
-    res.render("profile", { user: req.user });
 });
-
 
 // Edit a post
 router.get("/editpost/:id", ensureAuthenticated, async (req, res) => {
