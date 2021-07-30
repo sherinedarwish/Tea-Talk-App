@@ -12,17 +12,11 @@ const UserSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: true,
+        //required: true,
     },
     createdAt: {
         type: Date,
         default: Date.now
-    },
-    facebookId:{
-        type: mongoose.Schema.Types.ObjectId
-    },
-    googleId:{
-        type: String
     },
     friends: [{ 
         type : mongoose.Schema.Types.ObjectId, 
@@ -34,6 +28,13 @@ const UserSchema = new mongoose.Schema({
     cloudinary_id: {
         type: String,
     },
+    facebook : {
+        id           : String,
+        token        : String,
+        email        : String,
+        name         : String
+    }
+    
 
 });
 

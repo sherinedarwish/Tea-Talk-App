@@ -1,6 +1,5 @@
 const Post = require("../models/Post");
 const User = require("../models/User");
-const { post } = require("../routes");
 
 //POST METHOD
 async function createpost(req, res) {
@@ -162,6 +161,46 @@ async function getfriends(req) {
     return arrayfriends;    
 }
 
+// Get People you may know
+async function getpeople(req) {
+    const friends = req.user.friends;
+    var unknownpeople = [];
+
+    const Allpeople = await User.find().catch((err) => console.error(err));
+    if(!Allpeople) /// All of them are friends
+        return Allpeople;
+    let found =0;
+    for(let i=0;i<Allpeople.length;i++)
+    {
+        for(let j =0;j<friends.length;j++)
+        {
+            if(Allpeople[i]._id.equals(friends[j]))
+            {
+                found = 1;
+                break;
+            }
+        }
+
+        if(found == 0)
+        {
+            if(Allpeople[i]._id.equals(req.user._id))
+            {
+                
+            }
+            else
+            {
+                unknownpeople.push(Allpeople[i])
+                
+            }
+        }
+        found = 0;
+
+    }
+    
+    
+    return unknownpeople;    
+}
+
 // Add friend
 async function addfriend(req,res) {
     const user = req.user
@@ -198,24 +237,6 @@ async function addfriend(req,res) {
     };
 }
 
-
-
-async function checkfriend(req) {
-    const friendId = req.params.id;
-    const Newfriend = await User.findById(friendId).catch((err) => console.error(err));
-    const friends = req.user.friends;
-
-    var m = 0;
-
-    for(let i=0;i<friends.length;i++)
-    {
-        if(Newfriend._id.equals(friends[i]))
-        {   
-            m = 1;
-            return m;
-        }
-    }
-}
 // delete friend
 async function deletefriend(req, res) {
     const friendId = req.params.id;
@@ -266,5 +287,6 @@ module.exports = {
     getusers,
     addfriend,
     getfriends,
-    checkfriend
+    getpeople
+    
 };

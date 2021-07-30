@@ -76,19 +76,23 @@
                       value="<%=item.text %>" 
                       readonly="readonly" />
 
-                      <form action="/deletepost/<%= item._id %>?_method=DELETE"method="POST">
-                      <button
-                          type="submit"
-                          class="btn btn-danger btn"> X
-                      </button>
-                      </form>
+                      <div class="buttonss">
+                        <div class="action_btn">
+                          <form action="/deletepost/<%= item._id %>?_method=DELETE"method="POST">
+                          <button
+                              type="submit"
+                              class="btn btn-danger btn"> X
+                          </button>
+                          </form>
 
-                      <form action="/editpost/<%= item._id %>" method="GET">
-                        <button
-                            type="submit"
-                            class="btn btn-primary btn" > Edit
-                        </button>
-                      </form>
+                          <form action="/editpost/<%= item._id %>" method="GET">
+                            <button
+                                type="submit"
+                                class="btn btn-primary btn" > Edit
+                            </button>
+                          </form>
+                        </div>
+                      </div>
             
                     <% i++; }) %>
                   </div>

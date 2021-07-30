@@ -9,7 +9,7 @@ const addfriend = require("../config/services").addfriend;
 const getfriends= require("../config/services").getfriends;
 const deletefriend= require("../config/services").deletefriend;
 const getAllPosts= require("../config/services").getAllPosts;
-const checkfriend= require("../config/services").checkfriend;
+const getpeople= require("../config/services").getpeople;
 
 const bcrypt = require('bcryptjs');
 const upload = require ("../config/multer");
@@ -61,9 +61,7 @@ router.get("/friends", ensureAuthenticated, async function (req, res, next) {
 
 // GET ALL PEOPLE PAGE
 router.get("/people", ensureAuthenticated, async function (req, res, next) {
-    const data = await getusers(req);
-   // const m = await checkfriend(req);
-
+    const data = await getpeople(req);
     res.render("people", { data:data });
 });
 
