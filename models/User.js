@@ -28,6 +28,12 @@ const UserSchema = new mongoose.Schema({
     cloudinary_id: {
         type: String,
     },
+    like: {
+        type: Number
+    },
+    dislike: {
+        type: Number
+    },
     facebook : {
         id           : String,
         token        : String,

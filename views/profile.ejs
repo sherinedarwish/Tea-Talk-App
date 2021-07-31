@@ -43,18 +43,21 @@
 
     <div class="row">
         <div class="col-sm-4 ">
-          <% if(image_exists == 0){ %>
-            <img src="images/person1.png" alt="image" style='width:350px; height:250px; float: center;'></a>
-
-
-            <%} else { %>
-              <img src="<%= user.avatar %>"" alt="image" style='width:250px; height:200px; float: center;'></a>
+          <div class="cardbox card-body text-center">
+            <br>
+            <h3 style="color: black;"> Profile Picture</h3>
+            <br><br>
+            <% if(image_exists == 0){ %>
+              <img src="images/person1.png" alt="image" style='width:350px; height:250px; float: center;'></a>
+              <%} else { %>
+                <img src="<%= user.avatar %>"" alt="image" style='width:250px; height:200px; float: center;'></a>
 
               <% } %>
+          </div>
         </div>
         
         <div class="col-sm-6">
-          <div class="col-xl-md-6 m-left">
+          <div class="col-xl-md-6 m-left"> 
             <div class="card card-body text-center ">
                   <br>
                   <div class="card-header">

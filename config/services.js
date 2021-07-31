@@ -44,7 +44,7 @@ async function getpostsbySearch(req) {
 // Delete Method
 async function deletepost(req, res) {
     Post.findByIdAndRemove(req.params.id)
-        .then((data) => console.log(data))
+        .then((data) => console.log("Post deleted"))
         .catch((err) => console.error(err));
     res.redirect("/profile");
 }
@@ -64,7 +64,8 @@ async function getAllPosts(req,res) {
     const allposts = await Post.find().catch((err) =>console.error(err));
     const friends = req.user.friends;
     var array = [];
-    var names= []
+    var names= [];
+    var nofriends = 0;
     for(var i=0;i<allposts.length;i++)
     {
         if(allposts)
@@ -91,10 +92,17 @@ async function getAllPosts(req,res) {
             }
             else
             {
+                nofriends=1;
+                console.log("user has no friends now");
                 const userID = req.user._id;
-                const data = await Post.find({ userId: userID }).catch((err) => console.error(err));
-                names.push(req.user.name)
-               // res.render("dashboard", {name: req.user.name , data:array , names: names})
+                const array = await Post.find({ userId: userID }).catch((err) => console.error(err));
+                for(var i =0;i<array.length;i++)
+                {
+                    names.push(req.user.name)
+                }
+            
+                res.render("dashboard", {name: req.user.name , data:array , names: names})
+                break;
 
             }
             
@@ -102,8 +110,13 @@ async function getAllPosts(req,res) {
         else
             break;
     }
-    res.render("dashboard", {name: req.user.name , data:array , names: names})
-    //return array , names;
+    console.log(array);
+    console.log(names);
+    if(nofriends == 0)
+    {
+        res.render("dashboard", {name: req.user.name , data:array , names: names})
+
+    }
 }
 
 // Get names for all posts
@@ -185,7 +198,6 @@ async function getpeople(req) {
         {
             if(Allpeople[i]._id.equals(req.user._id))
             {
-                
             }
             else
             {
@@ -254,8 +266,9 @@ async function deletefriend(req, res) {
     }
     
 
-    User.findByIdAndUpdate(req.user._id,{friends}, {useFindAndModify: false}).catch(err=> console.error(err));
-    res.redirect("/friends");
+    await User.findByIdAndUpdate(req.user._id,{friends}, {useFindAndModify: false}).catch(err=> console.error(err));
+    res.redirect("/friends")
+   
 }
 
 
