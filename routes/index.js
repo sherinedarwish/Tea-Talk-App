@@ -114,7 +114,8 @@ router.delete("/deleteAvatar", ensureAuthenticated, async function (req, res, ne
     
     await cloudinary.uploader.destroy(req.user.cloudinary_id);
     let image_exists = 0;
-    const result = await User.updateOne({$unset: { avatar: "" , cloudinary_id: ""}});
+    console.log("req user id ", req.user._id)
+    const result = await User.updateOne({"_id":req.user._id},{$unset: { avatar: 1 , cloudinary_id:1}});
     console.log("result",result);
     res.redirect("/editprofile");
 });

@@ -1,5 +1,5 @@
 require("dotenv").config();
-const redisClient = require('./helpers/init_redis');
+//const redisClient = require('./helpers/init_redis');
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
@@ -52,19 +52,12 @@ cloudinary.config({
 // Express session
 app.use(
   session({
-    
-    store: new redisStore({ 
-      host: 'localhost', 
-      port: 6379, 
-      client: redisClient 
-    }),
-    name: '_redisDemo', 
-    secret: 'secret',
-    resave: false,
-    cookie: { secure: false, maxAge: 600000 }, // Set to secure:false and expire in 1 minute for demo purposes
-    saveUninitialized: true
+      secret: "secret",
+      resave: true,
+      saveUninitialized: true,
   })
 );
+
 
 // Method Override
 app.use(methodOverride("_method"));
