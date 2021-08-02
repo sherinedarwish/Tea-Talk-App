@@ -4,7 +4,7 @@
   "private": true,
   "main": "app.js",
   "scripts": {
-    "start": "npm run build & nodemon app.js",
+    "start": "node ./bin/www",
     "dev": " SET DEBUG=tea-talk:* & nodemon ./bin/www "
   },
   "dependencies": {
