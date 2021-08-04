@@ -1,11 +1,10 @@
 {
   "name": "tea-talk",
   "version": "0.0.0",
-  "private": true,
   "main": "app.js",
   "scripts": {
     "start": "npm install & node ./bin/www",
-    "dev": " SET DEBUG=tea-talk:* & nodemon ./bin/www "
+    "dev": "  nodemon app.js "
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
