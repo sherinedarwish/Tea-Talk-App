@@ -89,6 +89,9 @@ router.get("/editprofile", ensureAuthenticated, async function (req, res, next) 
 
 // Upload a picture
 router.post("/upload",upload.single('image'), ensureAuthenticated, async function (req, res, next) {
+    try{
+
+    
     let image_exists = 0;
     if (req.user.cloudinary_id )
     {
@@ -106,6 +109,10 @@ router.post("/upload",upload.single('image'), ensureAuthenticated, async functio
 
         await User.findByIdAndUpdate(req.user._id, {avatar: result.secure_url, cloudinary_id:result.public_id},{new:true, useFindAndModify:false})
         res.render("editprofile", { user: req.user, image_exists:image_exists})
+    }
+    }
+    catch(err) {
+        res.status(500).send(err)
     }
 });
 

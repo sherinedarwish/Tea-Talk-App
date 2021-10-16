@@ -27,18 +27,7 @@ router.get(
     failureRedirect: "/register"
   })
 );
-// router.get('/facebook',
-//   passport.authenticate('facebook',{scope:'email'} ,{ failureRedirect: '/users/login' }),
-//   function(req, res) {
-//     // Successful authentication, redirect home.
-//     res.redirect('/dashboard');
-//   });
 
-// router.get('/facebook/callback',
-//     passport.authenticate('facebook', {
-//         successRedirect : '/login',
-//         failureRedirect : '/'
-//     }));
 // Register
 router.post("/register", (req, res) => {
     const { name, email, password, password2 } = req.body;

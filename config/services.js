@@ -110,8 +110,6 @@ async function getAllPosts(req,res) {
         else
             break;
     }
-    console.log(array);
-    console.log(names);
     if(nofriends == 0)
     {
         res.render("dashboard", {name: req.user.name , data:array , names: names})
