@@ -39,8 +39,9 @@ router.get("/dashboard", ensureAuthenticated, async function (req, res, next) {
 // Search for a post 
 router.post('/search', ensureAuthenticated, async (req, res) => {
     const { searchtext } = req.body;
-    const data = await getpostsbySearch(req);
-    res.render('search', {posts:data,  searchtext: searchtext});
+    const [data,names] = await getpostsbySearch(req);
+    console.log("names ===== ", names);
+    res.render('search', {posts:data, names:names, searchtext: searchtext});
    
 })
 

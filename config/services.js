@@ -36,9 +36,14 @@ async function getpostsbySearch(req) {
     const { searchtext } = req.body;
     const regex = new RegExp(searchtext,"i");
     const posts = await Post.find({text: {$regex : regex}});
-
-   // console.log(posts);
-    return posts;
+    const allNames = []
+    for(var i=0;i<posts.length;i++)
+    {
+        const userId = posts[i].userId;
+        var names = await User.findById({ _id: userId}).catch((err) => console.error(err));
+        allNames.push(names.name)
+    }
+    return [posts,allNames];
 }
 
 // Delete Method
